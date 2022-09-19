@@ -16,9 +16,16 @@ class Recipe{
       totalTime: json['totalTime'] as String);
   }
 
+  //takes a list of data convert to a list of recipes
+  //retuns a snapshot of list to map
   static List<Recipe>recipesFromSnapshot(List snapshot){
     return snapshot.map((data){
       return Recipe.fromJson(data);
     }).toList();
+  }
+
+  @override
+  String toString(){
+    return 'Recipe {name: $name, image: $images, rating: $rating, totalTime:$totalTime}';
   }
 }

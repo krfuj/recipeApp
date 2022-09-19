@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:movie_shop/models/recipe_api.dart';
 import 'package:movie_shop/views/widgets/recipe_cart.dart';
+
+import '../models/recipe.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,6 +12,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  List<Recipe> _recipes;
+  bool _isLoading = true;
+
+  @override
+  void initState(){
+    super.initState();
+
+    getRecipe();
+  }
+
+  Future<void> getRecipe() async {
+    _recipes = await RecipeApi.getRecipe();
+    setState(() {
+      _isLoading = false;
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,17 +38,24 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.movie_outlined),
+            Icon(Icons.food_bank_sharp),
             SizedBox(width: 10,),
-            Text('Movie Kando')
+            Text('Recipe App')
           ],
         ),
       ),
-      body: RecipeCard(
-          title: "My recipe",
-          runTime: '1hr 30min',
-          rating: '8.0',
-          thumbnailUrl: 'https://unsplash.com/photos/meqVd5zwylI'),
+      body: _isLoading ? Center(child: CircularProgressIndicator())
+          :ListView.builder(
+        itemCount: _recipes.length,
+        itemBuilder: (context, index){
+          return RecipeCard(
+              title: _recipes[index].name,
+              runTime: _recipes[index].totalTime,
+              rating: _recipes[index].rating.toString(),
+              thumbnailUrl: _recipes[index].images
+          );
+        },
+              )
     );
   }
 }
